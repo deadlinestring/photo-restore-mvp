@@ -13,21 +13,35 @@ type ResultPageProps = {
 
 export default async function ResultPage({ params }: ResultPageProps) {
   const { id } = await params;
-  const supabase = createSupabaseAdminClient();
-  const { data: job } = await supabase
-    .from("photo_jobs")
-    .select("status,result_path,error_message")
-    .eq("id", id)
-    .single();
+  let job:
+    | {
+        status: string;
+        result_path: string | null;
+        error_message: string | null;
+      }
+    | null = null;
 
   let resultUrl: string | undefined;
 
-  if (job?.status === "done" && job.result_path) {
-    const { data: signedUrlData } = await supabase.storage
-      .from(RESULTS_BUCKET)
-      .createSignedUrl(job.result_path, 60 * 60);
+  try {
+    const supabase = createSupabaseAdminClient();
+    const { data } = await supabase
+      .from("photo_jobs")
+      .select("status,result_path,error_message")
+      .eq("id", id)
+      .single();
 
-    resultUrl = signedUrlData?.signedUrl;
+    job = data;
+
+    if (job?.status === "done" && job.result_path) {
+      const { data: signedUrlData } = await supabase.storage
+        .from(RESULTS_BUCKET)
+        .createSignedUrl(job.result_path, 60 * 60);
+
+      resultUrl = signedUrlData?.signedUrl;
+    }
+  } catch (error) {
+    console.error("Could not load photo restoration result page", error);
   }
 
   return (

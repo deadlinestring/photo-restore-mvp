@@ -12,6 +12,7 @@ type ResultViewProps = {
 export function ResultView({ resultId, status, resultUrl, errorMessage }: ResultViewProps) {
   const isDone = status === "done" && resultUrl;
   const isFailed = status === "failed";
+  const isMissing = status === "missing";
 
   return (
     <section className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[1fr_0.82fr]">
@@ -27,14 +28,18 @@ export function ResultView({ resultId, status, resultUrl, errorMessage }: Result
             ? "Реставрация готова"
             : isFailed
               ? "Реставрация не завершилась"
-              : "Фото еще обрабатывается"}
+              : isMissing
+                ? "Результат не найден"
+                : "Фото еще обрабатывается"}
         </h1>
         <p className="mt-4 max-w-xl text-base leading-7 text-ink/68">
           {isDone
             ? "Готовое фото сохранено в приватном bucket и доступно по временной signed-ссылке."
             : isFailed
               ? errorMessage || "Во время обработки произошла ошибка. Можно обратиться в поддержку."
-              : "AI-реставрация еще идет. Вернитесь на эту страницу через несколько секунд."}
+              : isMissing
+                ? "Для этого id пока нет готовой задачи. Мы не показываем демо-картинку вместо реального результата."
+                : "AI-реставрация еще идет. Вернитесь на эту страницу через несколько секунд."}
         </p>
 
         {isDone ? <SupportLinks imageUrl={resultUrl} /> : null}
@@ -68,10 +73,10 @@ export function ResultView({ resultId, status, resultUrl, errorMessage }: Result
           <div className="flex aspect-[4/3] w-full flex-col items-center justify-center rounded-md bg-linen px-6 text-center">
             <div className="mb-5 h-16 w-16 animate-spin rounded-full border-4 border-mint/25 border-t-mint" />
             <p className="text-lg font-bold text-ink">
-              {isFailed ? "Результат недоступен" : "Ожидаем результат"}
+              {isFailed || isMissing ? "Результат недоступен" : "Ожидаем результат"}
             </p>
             <p className="mt-2 max-w-sm text-sm leading-6 text-ink/62">
-              {isFailed
+              {isFailed || isMissing
                 ? "Мы не показываем демо-картинку вместо неготового результата."
                 : "Когда обработка завершится, здесь появится реальное фото."}
             </p>
