@@ -28,6 +28,9 @@ export default function RestorePage() {
             Выберите старую фотографию с компьютера или телефона. Подойдут JPG,
             PNG или WEBP до 10 МБ.
           </p>
+          <p className="mx-auto mt-3 max-w-2xl text-base font-bold leading-7 text-ink">
+            После загрузки вы увидите стоимость и сможете перейти к оплате.
+          </p>
         </div>
         <UploadBox restoreFlowMode={restoreFlowMode} />
       </section>

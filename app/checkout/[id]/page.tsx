@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { CheckoutPaymentStub } from "@/components/CheckoutPaymentStub";
+import { getRestorePriceRub } from "@/lib/config";
 
 type CheckoutPageProps = {
   params: Promise<{
@@ -8,6 +10,7 @@ type CheckoutPageProps = {
 
 export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const { id } = await params;
+  const priceRub = getRestorePriceRub();
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-5 py-8 sm:px-8 lg:px-10">
@@ -27,27 +30,37 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         <div className="rounded-lg bg-white p-6 shadow-soft sm:p-10">
           <p className="text-base font-bold text-mint">Фото загружено</p>
           <h1 className="mt-3 text-3xl font-bold leading-tight text-ink sm:text-5xl">
-            Следующий шаг - оплата восстановления
+            Остался последний шаг - оплатить восстановление
           </h1>
           <p className="mt-5 text-lg leading-8 text-ink/82">
-            После оплаты мы восстановим фото и покажем результат.
+            После оплаты мы улучшим фото и покажем готовый результат.
           </p>
 
           <div className="mt-8 rounded-lg bg-linen p-5">
-            <h2 className="text-xl font-bold text-ink">Стоимость восстановления</h2>
-            <p className="mt-3 text-lg leading-8 text-ink/82">
-              Стоимость восстановления одного фото будет показана перед оплатой.
+            <p className="text-lg font-bold text-ink">Восстановление одного фото</p>
+            <p className="mt-3 text-4xl font-bold text-ink">{priceRub} ₽</p>
+            <p className="mt-4 text-lg leading-8 text-ink/82">
+              После оплаты восстановление начнется автоматически. Обычно это
+              занимает около минуты.
             </p>
           </div>
 
-          <button
-            type="button"
-            disabled
-            className="mt-8 inline-flex min-h-14 w-full cursor-not-allowed items-center justify-center rounded-lg bg-ink/55 px-6 py-4 text-lg font-bold text-white"
-            aria-disabled="true"
-          >
-            Оплата будет подключена позже
-          </button>
+          <div className="mt-5 rounded-lg border border-mint/30 bg-white p-5">
+            <p className="text-lg font-bold leading-8 text-ink">
+              Если результат получится неудачным, напишите в поддержку - мы
+              попробуем помочь.
+            </p>
+          </div>
+
+          <div className="mt-5 rounded-lg border border-ink/10 bg-white p-5">
+            <p className="text-base leading-7 text-ink/82">
+              Оплата будет проходить через безопасную платежную форму. Если в
+              оплате будет указано название KARMA, это нормально - сервис может
+              работать через платежный аккаунт KARMA.
+            </p>
+          </div>
+
+          <CheckoutPaymentStub />
 
           <Link
             href="/restore"

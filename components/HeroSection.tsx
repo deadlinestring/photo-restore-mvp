@@ -9,13 +9,17 @@ const benefits = [
 
 const steps = ["Выберите фото", "Подождите обработку", "Скачайте готовый результат"];
 
-export function HeroSection() {
+type HeroSectionProps = {
+  priceRub: number;
+};
+
+export function HeroSection({ priceRub }: HeroSectionProps) {
   return (
     <main className="min-h-screen">
       <section className="mx-auto grid min-h-[92vh] w-full max-w-7xl items-center gap-10 px-5 py-8 sm:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:px-10">
         <div className="py-8">
           <p className="mb-5 inline-flex rounded-full bg-white px-4 py-2 text-base font-bold text-ink shadow-sm">
-            Восстановление семейных фотографий
+            Сервис восстановления фото от KARMA
           </p>
           <h1 className="max-w-4xl text-4xl font-bold leading-tight text-ink sm:text-6xl lg:text-7xl">
             Восстановим старое семейное фото
@@ -28,6 +32,14 @@ export function HeroSection() {
             Подходит для старых фото родителей, бабушек и дедушек, свадебных,
             детских и семейных снимков.
           </p>
+          <div className="mt-6 rounded-lg border border-white bg-white/90 p-5 shadow-sm">
+            <p className="text-xl font-bold text-ink">
+              Восстановление одного фото - {priceRub} ₽
+            </p>
+            <p className="mt-2 text-base leading-7 text-ink/82">
+              Сначала загрузите фото, затем оплатите восстановление.
+            </p>
+          </div>
           <div className="mt-8">
             <Link
               href="/restore"

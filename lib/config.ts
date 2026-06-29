@@ -8,6 +8,16 @@ export const appConfig = {
   supportUrl: process.env.NEXT_PUBLIC_SUPPORT_URL || ""
 };
 
+export function getRestorePriceRub() {
+  const value = Number(process.env.RESTORE_PRICE_RUB);
+
+  if (Number.isFinite(value) && value > 0) {
+    return Math.round(value);
+  }
+
+  return 99;
+}
+
 export function getRestoreFlowMode(): RestoreFlowMode {
   const value = process.env.RESTORE_FLOW_MODE;
 
