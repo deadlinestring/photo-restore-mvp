@@ -1,0 +1,13 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" fill="#EEF7F6"/>
+  <rect x="88" y="78" width="1024" height="744" rx="24" fill="#F8F4EE" stroke="#14213D" stroke-opacity="0.12" stroke-width="4"/>
+  <rect x="148" y="132" width="904" height="636" rx="18" fill="#FFFFFF"/>
+  <path d="M148 626L367 424L512 538L692 316L1052 626V750C1052 759.941 1043.94 768 1034 768H166C156.059 768 148 759.941 148 750V626Z" fill="#3FB8AF" fill-opacity="0.36"/>
+  <path d="M148 683L398 488L590 638L768 450L1052 672V750C1052 759.941 1043.94 768 1034 768H166C156.059 768 148 759.941 148 750V683Z" fill="#14213D" fill-opacity="0.26"/>
+  <circle cx="825" cy="253" r="76" fill="#E85D75" fill-opacity="0.72"/>
+  <rect x="250" y="210" width="252" height="30" rx="15" fill="#14213D" fill-opacity="0.16"/>
+  <rect x="250" y="266" width="364" height="24" rx="12" fill="#14213D" fill-opacity="0.10"/>
+  <rect x="250" y="318" width="298" height="24" rx="12" fill="#14213D" fill-opacity="0.10"/>
+  <rect x="208" y="708" width="784" height="2" fill="#14213D" fill-opacity="0.08"/>
+  <text x="600" y="846" text-anchor="middle" fill="#14213D" fill-opacity="0.56" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">Демо отреставрированного фото</text>
+</svg>
