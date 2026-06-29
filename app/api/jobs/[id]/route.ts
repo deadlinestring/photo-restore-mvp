@@ -47,18 +47,20 @@ export async function GET(_request: Request, { params }: JobRouteContext) {
 
   const { data: job, error: jobError } = await supabase
     .from("photo_jobs")
-    .select("id,status,result_path,error_message,fal_request_id")
+    .select("id,status,payment_status,result_path,error_message,fal_request_id")
     .eq("id", id)
     .single();
 
   if (jobError || !job) {
-    return jsonError("Задача не найдена.", 404);
+    return jsonError("Заявка не найдена.", 404);
   }
+
+  const paymentStatus = job.payment_status || "unpaid";
 
   if (job.status === "done" && job.result_path) {
     try {
       const resultUrl = await createResultSignedUrl(job.result_path);
-      return NextResponse.json({ id, status: "done", resultUrl });
+      return NextResponse.json({ id, status: "done", payment_status: paymentStatus, resultUrl });
     } catch (error) {
       console.error("Failed to sign existing result photo", error);
       return jsonError("Не удалось открыть результат. Попробуйте еще раз.", 500);
@@ -69,19 +71,20 @@ export async function GET(_request: Request, { params }: JobRouteContext) {
     return NextResponse.json({
       id,
       status: "failed",
+      payment_status: paymentStatus,
       error: job.error_message || "Реставрация завершилась с ошибкой."
     });
   }
 
   if (job.status !== "processing" || !job.fal_request_id) {
-    return NextResponse.json({ id, status: job.status });
+    return NextResponse.json({ id, status: job.status, payment_status: paymentStatus });
   }
 
   try {
     const restorationResult = await getPhotoRestorationResult(id);
 
     if (restorationResult.status === "processing") {
-      return NextResponse.json({ id, status: "processing" });
+      return NextResponse.json({ id, status: "processing", payment_status: paymentStatus });
     }
 
     const resultResponse = await fetch(restorationResult.imageUrl);
@@ -127,7 +130,7 @@ export async function GET(_request: Request, { params }: JobRouteContext) {
     }
 
     const resultUrl = await createResultSignedUrl(resultPath);
-    return NextResponse.json({ id, status: "done", resultUrl });
+    return NextResponse.json({ id, status: "done", payment_status: paymentStatus, resultUrl });
   } catch (error) {
     console.error("Failed to complete photo restoration job", error);
 
@@ -143,6 +146,7 @@ export async function GET(_request: Request, { params }: JobRouteContext) {
     return NextResponse.json({
       id,
       status: "failed",
+      payment_status: paymentStatus,
       error: "Не удалось завершить реставрацию."
     });
   }

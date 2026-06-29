@@ -17,26 +17,26 @@ function jsonError(message: string, status: number) {
 
 export async function POST(_request: Request, { params }: RestoreRouteContext) {
   const { id } = await params;
+  const restoreFlowMode = getRestoreFlowMode();
+  const supabase = createSupabaseAdminClient();
 
-  if (getRestoreFlowMode() === "payment_required") {
+  const { data: job, error: jobError } = await supabase
+    .from("photo_jobs")
+    .select("id,status,original_path,payment_status")
+    .eq("id", id)
+    .single();
+
+  if (jobError || !job) {
+    return jsonError("Заявка не найдена.", 404);
+  }
+
+  if (restoreFlowMode === "payment_required" && job.payment_status !== "paid") {
     return NextResponse.json(
       {
         error: "Payment is required before restoration"
       },
       { status: 402 }
     );
-  }
-
-  const supabase = createSupabaseAdminClient();
-
-  const { data: job, error: jobError } = await supabase
-    .from("photo_jobs")
-    .select("id,status,original_path")
-    .eq("id", id)
-    .single();
-
-  if (jobError || !job) {
-    return jsonError("Задача не найдена.", 404);
   }
 
   if (job.status === "processing") {
@@ -48,7 +48,7 @@ export async function POST(_request: Request, { params }: RestoreRouteContext) {
   }
 
   if (job.status !== "uploaded" && job.status !== "failed") {
-    return jsonError("Задачу нельзя отправить на обработку.", 409);
+    return jsonError("Заявку нельзя отправить на обработку.", 409);
   }
 
   try {
@@ -67,7 +67,7 @@ export async function POST(_request: Request, { params }: RestoreRouteContext) {
 
     if (updateError) {
       console.error("Failed to update photo job after fal submit", updateError);
-      return jsonError("Не удалось запустить реставрацию. Попробуйте еще раз.", 500);
+      return jsonError("Не удалось запустить восстановление. Попробуйте еще раз.", 500);
     }
 
     return NextResponse.json({ status: "processing" });
@@ -78,11 +78,11 @@ export async function POST(_request: Request, { params }: RestoreRouteContext) {
       .from("photo_jobs")
       .update({
         status: "failed",
-        error_message: "Не удалось запустить реставрацию.",
+        error_message: "Не удалось запустить восстановление.",
         updated_at: new Date().toISOString()
       })
       .eq("id", id);
 
-    return jsonError("Не удалось запустить реставрацию. Попробуйте еще раз.", 500);
+    return jsonError("Не удалось запустить восстановление. Попробуйте еще раз.", 500);
   }
 }

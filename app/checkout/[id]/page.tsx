@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { CheckoutPaymentStub } from "@/components/CheckoutPaymentStub";
+import { Suspense } from "react";
+import { CheckoutPaymentForm } from "@/components/CheckoutPaymentForm";
 import { getRestorePriceRub } from "@/lib/config";
 
 type CheckoutPageProps = {
@@ -40,27 +41,26 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
             <p className="text-lg font-bold text-ink">Восстановление одного фото</p>
             <p className="mt-3 text-4xl font-bold text-ink">{priceRub} ₽</p>
             <p className="mt-4 text-lg leading-8 text-ink/82">
-              После оплаты восстановление начнется автоматически. Обычно это
-              занимает около минуты.
+              После оплаты восстановление начнется автоматически. Обычно это занимает около минуты.
             </p>
           </div>
 
           <div className="mt-5 rounded-lg border border-mint/30 bg-white p-5">
             <p className="text-lg font-bold leading-8 text-ink">
-              Если результат получится неудачным, напишите в поддержку - мы
-              попробуем помочь.
+              Если результат получится неудачным, напишите в поддержку - мы попробуем помочь.
             </p>
           </div>
 
           <div className="mt-5 rounded-lg border border-ink/10 bg-white p-5">
             <p className="text-base leading-7 text-ink/82">
-              Оплата будет проходить через безопасную платежную форму. Если в
-              оплате будет указано название KARMA, это нормально - сервис может
-              работать через платежный аккаунт KARMA.
+              Оплата проходит через платежную форму ЮKassa. Если в оплате будет указано название
+              KARMA, это нормально - сервис работает через платежный аккаунт KARMA.
             </p>
           </div>
 
-          <CheckoutPaymentStub />
+          <Suspense fallback={<p className="mt-8 text-lg font-bold text-ink">Готовим оплату...</p>}>
+            <CheckoutPaymentForm jobId={id} />
+          </Suspense>
 
           <Link
             href="/restore"
