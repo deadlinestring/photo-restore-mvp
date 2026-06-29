@@ -85,8 +85,23 @@ fal-ai/image-apps-v2/photo-restoration
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - anon key Supabase для будущего browser-клиента.
 - `SUPABASE_SERVICE_ROLE_KEY` - service role key Supabase, только для server-side кода.
 - `FAL_KEY` - API key fal.ai, только для server-side кода.
+- `RESTORE_FLOW_MODE` - режим запуска восстановления: `free` или `payment_required`.
 
 Секретные ключи нельзя хранить в коде. Любые сервисные ключи должны использоваться только на сервере.
+
+## Режим запуска восстановления
+
+`RESTORE_FLOW_MODE=free` включает прежний тестовый сценарий: после загрузки фото приложение сразу отправляет задачу на восстановление. Используйте этот режим только для локальной проверки, когда вы понимаете, что каждая обработка может расходовать баланс fal.ai.
+
+`RESTORE_FLOW_MODE=payment_required` готовит публичный сценарий: после загрузки фото пользователь попадает на `/checkout/{jobId}`. В этом режиме fal.ai не запускается до оплаты. Backend дополнительно блокирует `POST /api/jobs/{id}/restore` и возвращает:
+
+```json
+{
+  "error": "Payment is required before restoration"
+}
+```
+
+Не деплойте публичную версию в `free`-режиме, если не готовы платить за все запущенные пользователями восстановления.
 
 ## API
 
@@ -109,7 +124,7 @@ fal-ai/image-apps-v2/photo-restoration
 
 ### `POST /api/jobs/{id}/restore`
 
-Запускает реставрацию:
+Запускает реставрацию только если `RESTORE_FLOW_MODE=free`.
 
 1. Находит задачу.
 2. Проверяет, что статус `uploaded` или `failed`.
@@ -117,6 +132,8 @@ fal-ai/image-apps-v2/photo-restoration
 4. Отправляет фото в fal.ai queue.
 5. Сохраняет `fal_request_id`.
 6. Обновляет статус на `processing`.
+
+Если `RESTORE_FLOW_MODE=payment_required`, route не запускает fal.ai и не переводит задачу в `processing`.
 
 ### `GET /api/jobs/{id}`
 
@@ -135,10 +152,11 @@ fal-ai/image-apps-v2/photo-restoration
 3. Переходит на `/restore` и выбирает изображение.
 4. Фото загружается в Supabase Storage.
 5. В `photo_jobs` создается задача.
-6. Запускается fal.ai реставрация.
-7. Frontend опрашивает `GET /api/jobs/{jobId}` каждые 3 секунды.
-8. После `status = done` пользователь переходит на `/result/{jobId}`.
-9. Страница результата показывает реальное фото через signed URL.
+6. В `free`-режиме запускается fal.ai реставрация.
+7. В `payment_required`-режиме пользователь переходит на `/checkout/{jobId}`.
+8. В `free`-режиме frontend опрашивает `GET /api/jobs/{jobId}` каждые 3 секунды.
+9. После `status = done` пользователь переходит на `/result/{jobId}`.
+10. Страница результата показывает реальное фото через signed URL.
 
 ## Как проверить полный flow
 

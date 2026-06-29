@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ProcessingState } from "@/components/ProcessingState";
-import { appConfig } from "@/lib/config";
+import { appConfig, type RestoreFlowMode } from "@/lib/config";
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 const POLL_INTERVAL_MS = 3000;
@@ -18,7 +18,11 @@ type JobStatusResponse = {
   error?: string;
 };
 
-export function UploadBox() {
+type UploadBoxProps = {
+  restoreFlowMode: RestoreFlowMode;
+};
+
+export function UploadBox({ restoreFlowMode }: UploadBoxProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [fileName, setFileName] = useState("");
@@ -117,6 +121,11 @@ export function UploadBox() {
       if (!createResponse.ok || !createData?.jobId) {
         setErrorMessage(createData?.error || "Не удалось загрузить фото. Попробуйте еще раз.");
         setStatus("idle");
+        return;
+      }
+
+      if (restoreFlowMode === "payment_required") {
+        router.push(`/checkout/${createData.jobId}`);
         return;
       }
 

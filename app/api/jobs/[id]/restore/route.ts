@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { submitPhotoRestoration } from "@/lib/ai/fal";
+import { getRestoreFlowMode } from "@/lib/config";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -16,6 +17,16 @@ function jsonError(message: string, status: number) {
 
 export async function POST(_request: Request, { params }: RestoreRouteContext) {
   const { id } = await params;
+
+  if (getRestoreFlowMode() === "payment_required") {
+    return NextResponse.json(
+      {
+        error: "Payment is required before restoration"
+      },
+      { status: 402 }
+    );
+  }
+
   const supabase = createSupabaseAdminClient();
 
   const { data: job, error: jobError } = await supabase

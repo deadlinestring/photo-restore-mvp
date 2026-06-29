@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { UploadBox } from "@/components/UploadBox";
+import { getRestoreFlowMode } from "@/lib/config";
 
 export default function RestorePage() {
+  const restoreFlowMode = getRestoreFlowMode();
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-5 py-8 sm:px-8 lg:px-10">
       <div className="mb-8 flex items-center justify-between gap-4">
@@ -26,7 +29,7 @@ export default function RestorePage() {
             PNG или WEBP до 10 МБ.
           </p>
         </div>
-        <UploadBox />
+        <UploadBox restoreFlowMode={restoreFlowMode} />
       </section>
     </main>
   );
