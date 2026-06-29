@@ -4,8 +4,8 @@
 
 :root {
   color-scheme: light;
-  background: #f8f4ee;
-  color: #14213d;
+  background: #faf3ea;
+  color: #243044;
 }
 
 * {
@@ -21,9 +21,9 @@ body {
   min-height: 100%;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(63, 184, 175, 0.16), transparent 32rem),
-    linear-gradient(180deg, #f8f4ee 0%, #ffffff 58%, #eef7f6 100%);
-  color: #14213d;
+    radial-gradient(circle at top left, rgba(184, 91, 91, 0.12), transparent 32rem),
+    linear-gradient(180deg, #faf3ea 0%, #ffffff 58%, #f3f7f2 100%);
+  color: #243044;
   font-family:
     Arial,
     Helvetica,
@@ -41,5 +41,5 @@ input {
 }
 
 ::selection {
-  background: rgba(232, 93, 117, 0.25);
+  background: rgba(184, 91, 91, 0.24);
 }

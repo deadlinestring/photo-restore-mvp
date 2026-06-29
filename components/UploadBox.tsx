@@ -45,7 +45,7 @@ export function UploadBox() {
         }
 
         if (!response.ok) {
-          setErrorMessage(data?.error || "Не удалось проверить статус обработки.");
+          setErrorMessage(data?.error || "Не удалось восстановить фото. Попробуйте другое изображение или напишите в поддержку.");
           setStatus("failed");
           return;
         }
@@ -56,12 +56,14 @@ export function UploadBox() {
         }
 
         if (data?.status === "failed") {
-          setErrorMessage(data.error || "Реставрация завершилась с ошибкой.");
+          setErrorMessage(
+            data.error || "Не удалось восстановить фото. Попробуйте другое изображение или напишите в поддержку."
+          );
           setStatus("failed");
         }
       } catch {
         if (!isCancelled) {
-          setErrorMessage("Не удалось проверить статус обработки.");
+          setErrorMessage("Не удалось восстановить фото. Попробуйте другое изображение или напишите в поддержку.");
           setStatus("failed");
         }
       }
@@ -128,7 +130,8 @@ export function UploadBox() {
 
       if (!restoreResponse.ok || restoreData?.status === "failed") {
         setErrorMessage(
-          restoreData?.error || "Не удалось запустить реставрацию. Попробуйте еще раз."
+          restoreData?.error ||
+            "Не удалось восстановить фото. Попробуйте другое изображение или напишите в поддержку."
         );
         setStatus("failed");
         return;
@@ -152,13 +155,12 @@ export function UploadBox() {
 
   if (status === "failed") {
     return (
-      <div className="rounded-lg border border-coral/20 bg-white/86 p-6 shadow-soft sm:p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-coral">
-          Ошибка обработки
-        </p>
-        <h2 className="mt-3 text-2xl font-bold">Не удалось восстановить фото</h2>
-        <p className="mt-3 text-sm leading-6 text-ink/66">
-          {errorMessage || "Реставрация завершилась с ошибкой."}
+      <div className="rounded-lg border-2 border-coral bg-white p-6 shadow-soft sm:p-8">
+        <p className="text-base font-bold text-coral">Не получилось восстановить фото</p>
+        <h2 className="mt-3 text-2xl font-bold text-ink">Попробуйте другое изображение</h2>
+        <p className="mt-4 text-lg leading-8 text-ink/82">
+          {errorMessage ||
+            "Не удалось восстановить фото. Попробуйте другое изображение или напишите в поддержку."}
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <button
@@ -168,13 +170,13 @@ export function UploadBox() {
               setErrorMessage("");
               setJobId("");
             }}
-            className="inline-flex min-h-12 items-center justify-center rounded-lg bg-ink px-5 py-3 font-bold text-white transition hover:bg-ink/90"
+            className="inline-flex min-h-14 items-center justify-center rounded-lg bg-ink px-6 py-4 text-lg font-bold text-white transition hover:bg-ink/90 focus:outline-none focus:ring-4 focus:ring-ink/25"
           >
             Попробовать еще раз
           </button>
           <a
             href={appConfig.supportUrl || "#"}
-            className="inline-flex min-h-12 items-center justify-center rounded-lg border border-ink/14 bg-white px-5 py-3 font-bold text-ink transition hover:border-mint hover:text-mint"
+            className="inline-flex min-h-14 items-center justify-center rounded-lg border-2 border-ink/20 bg-white px-6 py-4 text-lg font-bold text-ink transition hover:border-mint hover:text-mint focus:outline-none focus:ring-4 focus:ring-mint/25"
           >
             Техническая поддержка
           </a>
@@ -184,18 +186,20 @@ export function UploadBox() {
   }
 
   return (
-    <div className="rounded-lg border border-white bg-white/82 p-5 shadow-soft sm:p-8">
+    <div className="rounded-lg border border-white bg-white p-5 shadow-soft sm:p-8">
       <label
         htmlFor="photo-upload"
-        className="flex min-h-80 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-ink/18 bg-linen/70 px-5 py-10 text-center transition hover:border-coral/75 hover:bg-white"
+        className="flex min-h-80 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-ink/25 bg-linen px-5 py-10 text-center transition hover:border-coral hover:bg-white focus-within:ring-4 focus-within:ring-coral/25"
       >
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-coral text-3xl font-bold text-white">
+        <span
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-coral text-3xl font-bold text-white"
+          aria-hidden="true"
+        >
           +
         </span>
-        <span className="mt-5 text-xl font-bold">Выберите фото</span>
-        <span className="mt-3 max-w-md text-sm leading-6 text-ink/62">
-          Поддерживаются изображения JPG, PNG и WEBP до 10 МБ. Файл будет
-          сохранен в Supabase Storage, а затем отправлен на AI-реставрацию.
+        <span className="mt-5 text-2xl font-bold text-ink">Выбрать фото</span>
+        <span className="mt-3 max-w-md text-lg leading-8 text-ink/82">
+          JPG, PNG или WEBP до 10 МБ
         </span>
       </label>
       <input
@@ -204,19 +208,23 @@ export function UploadBox() {
         type="file"
         accept="image/jpeg,image/png,image/webp"
         className="sr-only"
+        aria-label="Выбрать фото для восстановления"
         onChange={handleFileChange}
       />
       {errorMessage ? (
-        <p className="mt-4 rounded-lg border border-coral/20 bg-coral/10 px-4 py-3 text-sm font-semibold text-coral">
+        <p
+          className="mt-4 rounded-lg border-2 border-coral bg-coral/10 px-4 py-3 text-base font-bold leading-6 text-ink"
+          role="alert"
+        >
           {errorMessage}
         </p>
       ) : null}
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-ink px-5 py-3 font-bold text-white transition hover:bg-ink/90 focus:outline-none focus:ring-4 focus:ring-ink/20"
+        className="mt-5 inline-flex min-h-14 w-full items-center justify-center rounded-lg bg-ink px-6 py-4 text-lg font-bold text-white transition hover:bg-ink/90 focus:outline-none focus:ring-4 focus:ring-ink/25"
       >
-        Загрузить изображение
+        Выбрать фото
       </button>
     </div>
   );

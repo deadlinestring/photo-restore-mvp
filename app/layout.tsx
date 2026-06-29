@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Реставрация старых фото онлайн",
-  description: "Простой MVP сайта для AI-реставрации старых фотографий."
+  title: "Восстановление старых семейных фото",
+  description: "Загрузите старую фотографию, улучшите качество и скачайте готовый результат."
 };
 
 export default function RootLayout({

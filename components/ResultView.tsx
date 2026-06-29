@@ -17,29 +17,30 @@ export function ResultView({ resultId, status, resultUrl, errorMessage }: Result
   return (
     <section className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[1fr_0.82fr]">
       <div>
-        <Link href="/" className="text-sm font-semibold text-ink/62 transition hover:text-ink">
+        <Link
+          href="/"
+          className="text-base font-bold text-ink transition hover:text-coral focus:outline-none focus:ring-4 focus:ring-coral/25"
+        >
           На главную
         </Link>
-        <p className="mt-8 text-sm font-semibold uppercase tracking-[0.18em] text-mint">
-          Результат {resultId}
-        </p>
-        <h1 className="mt-3 text-3xl font-bold sm:text-5xl">
+        <p className="mt-8 text-base font-bold text-mint">Заявка {resultId}</p>
+        <h1 className="mt-3 text-3xl font-bold leading-tight text-ink sm:text-5xl">
           {isDone
-            ? "Реставрация готова"
+            ? "Фото готово"
             : isFailed
-              ? "Реставрация не завершилась"
+              ? "Не удалось восстановить фото"
               : isMissing
                 ? "Результат не найден"
-                : "Фото еще обрабатывается"}
+                : "Фото еще восстанавливается"}
         </h1>
-        <p className="mt-4 max-w-xl text-base leading-7 text-ink/68">
+        <p className="mt-4 max-w-xl text-lg leading-8 text-ink/82">
           {isDone
-            ? "Готовое фото сохранено в приватном bucket и доступно по временной signed-ссылке."
+            ? "Вы можете скачать восстановленное фото или открыть его в полном размере."
             : isFailed
-              ? errorMessage || "Во время обработки произошла ошибка. Можно обратиться в поддержку."
+              ? "Попробуйте загрузить другое фото или напишите в поддержку."
               : isMissing
-                ? "Для этого id пока нет готовой задачи. Мы не показываем демо-картинку вместо реального результата."
-                : "AI-реставрация еще идет. Вернитесь на эту страницу через несколько секунд."}
+                ? "Для этого номера пока нет готового результата. Мы не показываем пример вместо настоящего фото."
+                : "Пожалуйста, подождите немного. Обычно это занимает около минуты."}
         </p>
 
         {isDone ? <SupportLinks imageUrl={resultUrl} /> : null}
@@ -48,13 +49,13 @@ export function ResultView({ resultId, status, resultUrl, errorMessage }: Result
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/restore"
-              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-ink px-5 py-3 font-bold text-white transition hover:bg-ink/90"
+              className="inline-flex min-h-14 items-center justify-center rounded-lg bg-ink px-6 py-4 text-lg font-bold text-white transition hover:bg-ink/90 focus:outline-none focus:ring-4 focus:ring-ink/25"
             >
               Загрузить другое фото
             </Link>
             <a
               href={appConfig.supportUrl || "#"}
-              className="inline-flex min-h-12 items-center justify-center rounded-lg border border-ink/14 bg-white px-5 py-3 font-bold text-ink transition hover:border-mint hover:text-mint"
+              className="inline-flex min-h-14 items-center justify-center rounded-lg border-2 border-ink/20 bg-white px-6 py-4 text-lg font-bold text-ink transition hover:border-mint hover:text-mint focus:outline-none focus:ring-4 focus:ring-mint/25"
             >
               Техническая поддержка
             </a>
@@ -66,19 +67,24 @@ export function ResultView({ resultId, status, resultUrl, errorMessage }: Result
         {isDone ? (
           <img
             src={resultUrl}
-            alt="Отреставрированное фото"
+            alt="Восстановленное семейное фото"
             className="aspect-[4/3] w-full rounded-md object-contain"
           />
         ) : (
           <div className="flex aspect-[4/3] w-full flex-col items-center justify-center rounded-md bg-linen px-6 text-center">
-            <div className="mb-5 h-16 w-16 animate-spin rounded-full border-4 border-mint/25 border-t-mint" />
-            <p className="text-lg font-bold text-ink">
+            {!isFailed && !isMissing ? (
+              <div
+                className="mb-5 h-16 w-16 animate-spin rounded-full border-4 border-mint/25 border-t-mint"
+                aria-hidden="true"
+              />
+            ) : null}
+            <p className="text-xl font-bold text-ink">
               {isFailed || isMissing ? "Результат недоступен" : "Ожидаем результат"}
             </p>
-            <p className="mt-2 max-w-sm text-sm leading-6 text-ink/62">
+            <p className="mt-3 max-w-sm text-base leading-7 text-ink/82">
               {isFailed || isMissing
-                ? "Мы не показываем демо-картинку вместо неготового результата."
-                : "Когда обработка завершится, здесь появится реальное фото."}
+                ? errorMessage || "Попробуйте загрузить другое фото или напишите в поддержку."
+                : "Когда восстановление завершится, здесь появится ваше фото."}
             </p>
           </div>
         )}
